@@ -1,0 +1,32 @@
+{
+  "name": "college-whatsapp-system",
+  "version": "1.0.0",
+  "description": "College WhatsApp PDF distribution system via Exotel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "exotel",
+    "pdf",
+    "college",
+    "fee-receipt"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.0",
+    "aws-sdk": "^2.1500.0",
+    "firebase-admin": "^12.0.0",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
