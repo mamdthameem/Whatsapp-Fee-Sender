@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Fee Sender - SSEC</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta name="description" content="Sree Sakthi Engineering College - WhatsApp Fee Receipt Sender System">
+    <title>Fee Receipt Sender | SSEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,243 +14,491 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a2332 0%, #2d3748 50%, #1a2332 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
+        :root {
+            --primary: #c62828;
+            --primary-dark: #b71c1c;
+            --primary-light: #e53935;
+            --accent: #ffc107;
+            --accent-dark: #ffa000;
+            --accent-light: #ffd54f;
+            --success: #2e7d32;
+            --error: #c62828;
+            --warning: #f57c00;
+            --info: #1976d2;
+            --text-primary: #212121;
+            --text-secondary: #424242;
+            --text-light: #757575;
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border: #e0e0e0;
+            --shadow-1: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-2: 0 4px 8px rgba(0,0,0,0.12);
+            --shadow-3: 0 8px 16px rgba(0,0,0,0.15);
+            --shadow-4: 0 12px 24px rgba(0,0,0,0.18);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
         }
 
-        /* Academic pattern overlay */
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #fafafa 100%);
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle pattern background */
         body::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 215, 0, 0.03) 35px, rgba(255, 215, 0, 0.03) 70px);
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(198, 40, 40, 0.02) 2px, rgba(198, 40, 40, 0.02) 4px),
+                repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255, 193, 7, 0.02) 2px, rgba(255, 193, 7, 0.02) 4px);
             pointer-events: none;
             z-index: 0;
         }
 
-        .main-wrapper {
+        /* Main Layout */
+        .app-container {
             position: relative;
             z-index: 1;
-            width: 100%;
-            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* Header with Logo */
-        .header-section {
-            background: linear-gradient(135deg, #1a2332 0%, #2d3748 100%);
-            border-radius: 12px 12px 0 0;
-            padding: 30px 40px;
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-2);
+            padding: 0.75rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 3px solid #d4af37;
+            justify-content: space-between;
+            gap: 2rem;
         }
 
-        .logo-container {
-            flex-shrink: 0;
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;    
         }
 
-        .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid #d4af37;
-            padding: 5px;
-            background: white;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        .logo-img {
+            height: 50px;
+            width: auto;
+            max-width: 250px;
+            object-fit: contain;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
         }
 
-        .header-text {
+        .brand-info {
             flex: 1;
         }
 
         .college-name {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 5px;
-            letter-spacing: 0.5px;
+            color: var(--primary);
+            margin-bottom: 0.15rem;
+            line-height: 1.2;
         }
 
-        .accreditation {
-            font-size: 11px;
-            color: #d4af37;
+        .subtitle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .college-subtitle {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
+            letter-spacing: 0.8px;
+            font-weight: 500;
         }
 
-        .system-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            color: #d4af37;
+        .system-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #212121;
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
             font-weight: 600;
-            margin-top: 8px;
-            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            white-space: nowrap;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
-            max-width: 600px;
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .form-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-4);
+            max-width: 480px;
             width: 100%;
-            padding: 50px 45px;
-            margin: 0 auto;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 2px solid #e8e8e8;
-        }
-
-        .form-header h1 {
-            font-family: 'Playfair Display', serif;
-            color: #1a2332;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        .form-header p {
-            color: #64748b;
-            font-size: 15px;
-            font-weight: 400;
-        }
-
-        .form-group {
-            margin-bottom: 28px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #1a2332;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .required {
-            color: #dc2626;
-            font-weight: 700;
-        }
-
-        input[type="text"],
-        input[type="file"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-        }
-
-        input[type="text"]:focus,
-        input[type="file"]:focus {
-            outline: none;
-            border-color: #d4af37;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
-        }
-
-        input[type="file"] {
-            padding: 12px;
-            cursor: pointer;
-            background: #ffffff;
-        }
-
-        .file-info {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 8px;
-            font-style: italic;
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #1a2332 0%, #2d3748 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(26, 35, 50, 0.3);
+            padding: 1.75rem;
             position: relative;
             overflow: hidden;
         }
 
-        button::before {
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-2);
+            border: 2px solid var(--accent);
+        }
+
+        .card-icon i {
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .form-label i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .required-mark {
+            color: var(--error);
+            font-weight: 700;
+            margin-left: 0.25rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(198, 40, 40, 0.1);
+        }
+
+        .form-input:focus + i,
+        .input-group:focus-within i {
+            color: var(--primary);
+        }
+
+        .file-upload-area {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+            background: var(--bg-tertiary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(198, 40, 40, 0.02);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(255, 193, 7, 0.08);
+            border-style: solid;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-content {
+            pointer-events: none;
+        }
+
+        .file-upload-icon {
+            font-size: 2.25rem;
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .file-upload-text {
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+        }
+
+        .file-upload-hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .file-selected {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            margin-top: 0.75rem;
+        }
+
+        .file-selected.active {
+            display: flex;
+        }
+
+        .file-selected i {
+            font-size: 1.5rem;
+            color: var(--error);
+        }
+
+        .file-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .helper-text i {
+            font-size: 0.75rem;
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            box-shadow: var(--shadow-2);
+            margin-top: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s;
         }
 
-        button:hover::before {
+        .submit-btn:hover:not(:disabled)::before {
             left: 100%;
         }
 
-        button:hover {
+        .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(26, 35, 50, 0.4);
-            background: linear-gradient(135deg, #2d3748 0%, #1a2332 100%);
+            box-shadow: var(--shadow-3);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
         }
 
-        button:active {
+        .submit-btn:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        button:disabled {
+        .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        .message {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-            animation: slideIn 0.4s ease-out;
-            border-left: 4px solid;
+        .submit-btn i {
+            font-size: 1.1rem;
         }
 
-        @keyframes slideIn {
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(198, 40, 40, 0.1);
+            border-top-color: var(--primary);
+            border-right-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 0.75rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        /* Messages */
+        .message {
+            display: none;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            animation: slideDown 0.4s ease-out;
+            box-shadow: var(--shadow-2);
+        }
+
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(-15px);
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -257,305 +507,251 @@
         }
 
         .message.success {
-            background: #f0fdf4;
-            color: #166534;
-            border-color: #22c55e;
             display: block;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 4px solid var(--success);
+            color: #2e7d32;
         }
 
         .message.error {
-            background: #fef2f2;
-            color: #991b1b;
-            border-color: #ef4444;
             display: block;
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-left: 4px solid var(--error);
+            color: #c62828;
         }
 
-        .loading {
-            display: none;
+        .message-icon {
+            font-size: 2rem;
             text-align: center;
-            margin-top: 15px;
+            margin-bottom: 0.75rem;
         }
 
-        .spinner {
-            border: 3px solid #f3f4f6;
-            border-top: 3px solid #d4af37;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .loading p {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 8px;
-        }
-
-        .success-icon {
-            font-size: 48px;
+        .message-title {
+            font-size: 1.1rem;
+            font-weight: 700;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 0.5rem;
         }
 
-        .footer-note {
+        .message-text {
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e8e8e8;
-            font-size: 12px;
-            color: #94a3b8;
+            line-height: 1.6;
         }
 
-        /* Responsive Design */
+        .message-details {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .header-section {
-                flex-direction: column;
-                text-align: center;
-                padding: 25px 20px;
+            .navbar {
+                padding: 1rem;
             }
 
-            .logo {
-                width: 70px;
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .navbar-brand {
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-img {
                 height: 70px;
+                max-width: 180px;
+                background: transparent;
+                border: none;
+                box-shadow: none;
             }
 
             .college-name {
-                font-size: 20px;
+                font-size: 1.25rem;
             }
 
-            .container {
-                padding: 35px 25px;
+            .main-content {
+                padding: 2rem 1rem;
             }
 
-            .form-header h1 {
-                font-size: 26px;
+            .form-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.75rem;
             }
         }
 
-        /* File input styling enhancement */
-        input[type="file"]::file-selector-button {
-            padding: 8px 16px;
-            margin-right: 12px;
-            border: 2px solid #d4af37;
-            border-radius: 6px;
-            background: #ffffff;
-            color: #1a2332;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1.5rem 1rem;
+            }
 
-        input[type="file"]::file-selector-button:hover {
-            background: #d4af37;
-            color: #ffffff;
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card-icon i {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper">
-        <!-- Header with Logo -->
-        <div class="header-section">
-            <div class="logo-container">
-                <img src="assets/college-logo.png" alt="SSEC Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div style="display:none; width: 80px; height: 80px; border-radius: 50%; border: 3px solid #d4af37; background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">SSEC</div>
+    <div class="app-container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <img src="assets/college-logo.png" alt="SSEC Logo" class="logo-img" onerror="this.style.display='none'">
+                    <div class="brand-info">
+                        <div class="college-name">Digital Fee Receipt Portal</div>
+                        <div class="subtitle-wrapper">
+                            <span class="college-subtitle">Instant WhatsApp Delivery | Secure & Reliable | Paperless System</span>
+                            <div class="system-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Official System</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="header-text">
-                <div class="college-name">SREE SAKTHI ENGINEERING COLLEGE</div>
-                <div class="accreditation">Approved by AICTE, Affiliated to Anna University, Chennai</div>
-                <div class="accreditation">Accredited by NAAC with B++ Grade</div>
-                <div class="system-title">WhatsApp Fee Sender</div>
-            </div>
-        </div>
+        </nav>
 
-        <!-- Main Form Container -->
-        <div class="container">
-            <div class="form-header">
-                <h1>Send Fee Receipt</h1>
-                <p>Deliver fee receipts to students via WhatsApp</p>
-            </div>
-
-            <form id="uploadForm">
-                <div class="form-group">
-                    <label for="phoneNumber">
-                        WhatsApp Number <span class="required">*</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="phoneNumber" 
-                        name="phoneNumber" 
-                        placeholder="e.g., 9876543210 or +919876543210"
-                        required
-                    >
-                    <div class="file-info">Enter 10-digit Indian number or international format</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h1 class="card-title">Send Fee Receipt</h1>
+                    <p class="card-subtitle">Deliver fee receipts to students via WhatsApp instantly</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="pdfFile">
-                        Select PDF File <span class="required">*</span>
-                    </label>
-                    <input 
-                        type="file" 
-                        id="pdfFile" 
-                        name="pdf" 
-                        accept=".pdf"
-                        required
-                    >
-                    <div class="file-info">Only PDF files accepted (Maximum 5MB)</div>
-                </div>
+                <form id="uploadForm">
+                    <!-- Phone Number Input -->
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">
+                            <i class="fas fa-phone"></i>
+                            WhatsApp Number
+                            <span class="required-mark">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="phoneNumber" 
+                                name="phoneNumber" 
+                                class="form-input"
+                                placeholder="Enter 10-digit number (e.g., 9876543210)"
+                                required
+                                maxlength="15"
+                            >
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="helper-text">
+                            <i class="fas fa-info-circle"></i>
+                            Enter 10-digit Indian number or international format with country code
+                        </div>
+                    </div>
 
-                <button type="submit" id="submitBtn">
-                    <span>Send Fee Receipt</span>
-                </button>
+                    <!-- PDF File Upload -->
+                    <div class="form-group">
+                        <label class="form-label" for="pdfFile">
+                            <i class="fas fa-file-pdf"></i>
+                            Fee Receipt PDF
+                            <span class="required-mark">*</span>
+                        </label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input 
+                                type="file" 
+                                id="pdfFile" 
+                                name="pdf" 
+                                class="file-input"
+                                accept=".pdf"
+                                required
+                            >
+                            <div class="file-upload-content">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="file-upload-text">Click to upload or drag and drop</div>
+                                <div class="file-upload-hint">PDF file (Max. 5MB)</div>
+                            </div>
+                        </div>
+                        <div class="file-selected" id="fileSelected">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="file-info">
+                                <div class="file-name" id="fileName"></div>
+                                <div class="file-size" id="fileSize"></div>
+                            </div>
+                            <button type="button" class="remove-file" id="removeFile" style="background: none; border: none; color: var(--error); cursor: pointer; font-size: 1.25rem;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="helper-text">
+                            <i class="fas fa-shield-alt"></i>
+                            Only PDF files are accepted. Maximum file size is 5MB.
+                        </div>
+                    </div>
 
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Processing and sending receipt...</p>
-                </div>
-            </form>
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send Receipt</span>
+                    </button>
 
-            <div class="message" id="message"></div>
+                    <!-- Loading Indicator -->
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Processing and sending receipt...</div>
+                    </div>
+                </form>
 
-            <div class="footer-note">
-                Secure &amp; Professional Fee Receipt Delivery System
+                <!-- Message Display -->
+                <div class="message" id="message"></div>
             </div>
-        </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-text">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure & Professional Fee Receipt Delivery System | © 2024 SSEC</span>
+            </div>
+        </footer>
     </div>
 
-    <script>
-        const form = document.getElementById('uploadForm');
-        const phoneInput = document.getElementById('phoneNumber');
-        const pdfInput = document.getElementById('pdfFile');
-        const submitBtn = document.getElementById('submitBtn');
-        const loading = document.getElementById('loading');
-        const messageDiv = document.getElementById('message');
-
-        // Form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Validate inputs
-            if (!validateInputs()) {
-                return;
-            }
-
-            // Show loading state
-            submitBtn.disabled = true;
-            loading.classList.add('active');
-            messageDiv.innerHTML = '';
-            messageDiv.className = 'message';
-
-            try {
-                // Prepare form data
-                const formData = new FormData();
-                formData.append('phoneNumber', phoneInput.value);
-                formData.append('pdf', pdfInput.files[0]);
-
-                // Send request
-                const response = await fetch('/api/upload/send-pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showSuccess(data);
-                    form.reset();
-                } else {
-                    showError(data.message || 'Failed to send receipt');
-                }
-            } catch (error) {
-                showError('Network error. Please try again.');
-                console.error('Error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                loading.classList.remove('active');
-            }
-        });
-
-        // Validate inputs
-        function validateInputs() {
-            const phone = phoneInput.value.trim();
-            const file = pdfInput.files[0];
-
-            // Validate phone number
-            if (!phone) {
-                showError('Please enter a WhatsApp number');
-                return false;
-            }
-
-            const phoneRegex = /^\d{10,15}$|^\+\d{1,15}$/;
-            const cleanedPhone = phone.replace(/\D/g, '');
-            if (!phoneRegex.test(phone) && cleanedPhone.length < 10) {
-                showError('Invalid phone number format');
-                return false;
-            }
-
-            // Validate file
-            if (!file) {
-                showError('Please select a PDF file');
-                return false;
-            }
-
-            if (!file.type.includes('pdf')) {
-                showError('Only PDF files are allowed');
-                return false;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                showError('File size exceeds 5MB limit');
-                return false;
-            }
-
-            return true;
-        }
-
-        // Show success message
-        function showSuccess(data) {
-            messageDiv.innerHTML = `
-                <div class="success-icon">✓</div>
-                <strong style="display: block; text-align: center; font-size: 18px; margin-bottom: 10px;">Success!</strong>
-                <p style="text-align: center; margin-bottom: 8px;">
-                    Fee receipt sent successfully to ${data.phoneNumber}
-                </p>
-                <p style="text-align: center; font-size: 12px; color: #166534; margin-top: 8px;">
-                    Message ID: ${data.messageId || 'N/A'}
-                </p>
-            `;
-            messageDiv.className = 'message success';
-        }
-
-        // Show error message
-        function showError(message) {
-            messageDiv.innerHTML = `
-                <strong style="display: block; text-align: center; font-size: 18px; margin-bottom: 10px;">Error</strong>
-                <p style="text-align: center;">${message}</p>
-            `;
-            messageDiv.className = 'message error';
-        }
-
-        // Format phone number input
-        phoneInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 15) {
-                value = value.substring(0, 15);
-            }
-            e.target.value = value;
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
