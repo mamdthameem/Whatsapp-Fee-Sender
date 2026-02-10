@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "ssec-outing"
+  },
+  "targets": {
+    "ssec-outing": {
+      "hosting": {
+        "wa-pdf": [
+          "wa-pdf"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

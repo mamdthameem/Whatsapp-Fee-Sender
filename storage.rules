@@ -1,0 +1,11 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /fee-receipts/{fileName} {
+      // Allow public read access (WhatsApp needs this)
+      allow read: if true;
+      // Only allow authenticated writes (or adjust based on your needs)
+      allow write: if request.auth != null;
+    }
+  }
+}

@@ -34,3 +34,12 @@ desktop.ini
 
 # Windows service logs
 windows-service/logs/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+functions/node_modules/
+functions/.env
+functions/firebase-service-account.json
