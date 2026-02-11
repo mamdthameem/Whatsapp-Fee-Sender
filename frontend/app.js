@@ -32,33 +32,27 @@ class FeeSenderApp {
 
     setupDragAndDrop() {
         const area = this.elements.fileUploadArea;
-        
+        // Passive: false only where we call preventDefault (drag/drop); visual toggles use passive for responsiveness
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             area.addEventListener(eventName, (e) => this.preventDefaults(e), false);
         });
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            area.addEventListener(eventName, () => {
-                area.classList.add('dragover');
-            }, false);
+            area.addEventListener(eventName, () => area.classList.add('dragover'), { passive: true });
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            area.addEventListener(eventName, () => {
-                area.classList.remove('dragover');
-            }, false);
+            area.addEventListener(eventName, () => area.classList.remove('dragover'), { passive: true });
         });
 
         area.addEventListener('drop', (e) => {
             const dt = e.dataTransfer;
             const files = dt ? dt.files : null;
             if (files && files.length > 0) {
-                // Create a new FileList-like object
                 const file = files[0];
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(file);
                 this.elements.pdfInput.files = dataTransfer.files;
-                // Trigger change event
                 this.elements.pdfInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
         }, false);
@@ -216,12 +210,6 @@ class FeeSenderApp {
             <div class="message-text">
                 Fee receipt sent successfully to ${data.phoneNumber || 'the recipient'}
             </div>
-            ${data.messageId ? `
-                <div class="message-details">
-                    <i class="fas fa-hashtag"></i>
-                    Message ID: ${data.messageId}
-                </div>
-            ` : ''}
         `;
         this.elements.messageDiv.className = 'message success';
         this.scrollToMessage();
