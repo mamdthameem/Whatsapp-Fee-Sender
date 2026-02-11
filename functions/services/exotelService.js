@@ -19,55 +19,81 @@ exports.sendDocumentMessage = async (phoneNumber, documentUrl, fileName) => {
     const formattedNumber = formatPhoneNumber(phoneNumber);
     const { API_KEY: apiKey, API_TOKEN: apiToken, SID: sid } = config.EXOTEL;
     const endpoint = `https://api.exotel.com/v2/accounts/${sid}/messages`;
-    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const finalDocumentUrl = documentUrl.startsWith('http') ? documentUrl : encodeURI(documentUrl);
 
-    if (!documentUrl || !documentUrl.startsWith('http')) {
+    // Document URL must be the raw public URL (same format as working Postman)
+    const documentLink = typeof documentUrl === 'string' && documentUrl.startsWith('http')
+      ? documentUrl.trim()
+      : null;
+    if (!documentLink) {
       throw new Error(`Invalid document URL: ${documentUrl}`);
     }
 
+    // Filename for Exotel: safe display name (match working Postman "College_Fee_Receipt.pdf")
+    let finalFilename = (fileName || 'College_Fee_Receipt.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (!finalFilename.toLowerCase().endsWith('.pdf')) finalFilename = finalFilename + '.pdf';
+    if (!finalFilename) finalFilename = 'College_Fee_Receipt.pdf';
+
+    // Build payload to match working Postman request exactly
     const payload = {
-      custom_data: `Fee Receipt - ${sanitizedFileName}`,
+      custom_data: `fee_receipt_${Date.now()}`,
       whatsapp: {
-        messages: [{
-          from: config.EXOTEL.FROM_NUMBER,
-          to: formattedNumber,
-          content: {
-            type: 'template',
-            template: {
-              name: config.EXOTEL.TEMPLATE_NAME,
-              language: { policy: 'deterministic', code: 'en' },
-              components: [
-                {
-                  type: 'header',
-                  parameters: [{
-                    type: 'document',
-                    document: { link: finalDocumentUrl, filename: sanitizedFileName }
-                  }]
-                },
-                {
-                  type: 'body',
-                  parameters: []
-                }
-              ]
+        messages: [
+          {
+            from: String(config.EXOTEL.FROM_NUMBER || '919442027368').replace(/\D/g, ''),
+            to: formattedNumber,
+            content: {
+              type: 'template',
+              template: {
+                name: config.EXOTEL.TEMPLATE_NAME || 'college_fee_receipt',
+                language: { policy: 'deterministic', code: 'en' },
+                components: [
+                  {
+                    type: 'header',
+                    parameters: [
+                      {
+                        type: 'document',
+                        document: {
+                          link: documentLink,
+                          filename: finalFilename
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    type: 'body',
+                    parameters: []
+                  }
+                ]
+              }
             }
           }
-        }]
+        ]
       }
     };
 
-    // Add optional status_callback if configured
     if (config.EXOTEL.STATUS_CALLBACK) {
       payload.status_callback = config.EXOTEL.STATUS_CALLBACK;
     }
 
-    logger.info(`Sending WhatsApp message to ${formattedNumber}`);
-    logger.debug(`Payload: ${JSON.stringify(payload, null, 2)}`);
+    logger.info(`Exotel: to=${formattedNumber}, document: ${documentLink}`);
+    logger.info(`Exotel payload document.link: ${payload.whatsapp.messages[0].content.template.components[0].parameters[0].document.link}`);
+
+    // Verify document URL is reachable before sending to Exotel
+    try {
+      const headRes = await axios.head(documentLink, { timeout: 10000, validateStatus: () => true });
+      if (headRes.status !== 200) {
+        logger.warn(`Document URL returned HTTP ${headRes.status} - Exotel may fail to fetch`);
+      }
+    } catch (urlErr) {
+      logger.warn(`Document URL check failed: ${urlErr.message}`);
+    }
 
     const response = await axios.post(endpoint, payload, {
       headers: { 'Content-Type': 'application/json' },
       auth: { username: apiKey, password: apiToken },
-      timeout: 30000
+      timeout: 30000,
+      maxRedirects: 0,
+      validateStatus: (status) => status >= 200 && status < 300
     });
 
     // Parse response according to actual Exotel API format

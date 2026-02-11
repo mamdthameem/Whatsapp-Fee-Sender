@@ -58,13 +58,17 @@ module.exports = {
   // URL settings
   URL: {
     EXPIRY_TIME: 10 * 60 * 1000, // 10 minutes
-    BASE_URL: getConfig('url.base_url', process.env.BASE_URL || 'https://wa-pdf.web.app')
+    BASE_URL: getConfig('url.base_url', process.env.BASE_URL || 'https://wa-pdf.web.app'),
+    // Proxy for WhatsApp: GET this URL with ?fileId=fee-receipts/xxx.pdf to stream PDF (no token/redirect)
+    DOWNLOAD_PROXY_BASE_URL: getConfig('url.download_proxy_base_url', process.env.DOWNLOAD_PROXY_BASE_URL || `https://${process.env.FUNCTION_REGION || 'us-central1'}-${process.env.GCLOUD_PROJECT || 'ssec-outing'}.cloudfunctions.net/downloadFee`)
   },
 
   // Cleanup settings
   CLEANUP: {
     ENABLED: getConfig('cleanup.enabled', 'true') === 'true',
     DELETE_AFTER_SEND: true,
+    // Delay before deleting file so WhatsApp/Exotel have time to fetch (default 2 hours)
+    DELAY_MS: parseInt(getConfig('cleanup.delay_ms', process.env.CLEANUP_DELAY_MS || (2 * 60 * 60 * 1000)), 10) || (2 * 60 * 60 * 1000),
     ARCHIVE_PATH: '/tmp/archives' // Use /tmp in Cloud Functions
   },
 

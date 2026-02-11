@@ -20,11 +20,13 @@ function logTransaction(phoneNumber, fileName, storedFileName, status, messageId
 }
 
 function scheduleFileCleanup(storedFileName, uniqueId) {
-  const cleanupTime = config.URL.EXPIRY_TIME + 5 * 60 * 1000;
+  const delayMs = config.CLEANUP.DELAY_MS || 2 * 60 * 60 * 1000;
+  const delayMin = Math.round(delayMs / 60000);
+  logger.info(`File cleanup scheduled for ${storedFileName} in ${delayMin} minutes`);
   setTimeout(() => {
     storageService.deleteOrArchiveFile(storedFileName, uniqueId).catch(() => {});
-    logger.info(`File cleanup scheduled for: ${storedFileName}`);
-  }, 1000);
+    logger.info(`File cleanup ran for: ${storedFileName}`);
+  }, delayMs);
 }
 
 exports.sendPdfViaWhatsApp = async (req, res) => {
@@ -51,23 +53,23 @@ exports.sendPdfViaWhatsApp = async (req, res) => {
     const originalFileName = file.originalname;
     storedFileName = `${uniqueId}_${originalFileName}`;
 
-    let fileUrl;
     try {
-      fileUrl = await storageService.savePdf(file, storedFileName);
-      logger.info(`PDF stored successfully: ${storedFileName}`);
+      await storageService.savePdf(file, storedFileName);
+      const fileIdForLog = `fee-receipts/${storedFileName}`;
+      logger.info(`PDF stored successfully. path=${fileIdForLog} bucket=${config.STORAGE.FIREBASE_STORAGE_BUCKET}`);
     } catch (error) {
       logger.error(`Failed to store PDF: ${error.message}`);
       return res.status(500).json({ success: false, message: 'Failed to store PDF file' });
     }
 
-    const tempUrl = config.STORAGE.TYPE === 'local'
-      ? urlGenerator.generateSecureUrl(fileUrl, uniqueId)
-      : fileUrl;
-    logger.info(`Public URL from Firebase Storage: ${tempUrl}`);
+    // Use proxy URL for WhatsApp (GET → PDF stream, no redirect/token). Exotel fetches this URL.
+    const fileId = `fee-receipts/${storedFileName}`;
+    const documentUrl = `${config.URL.DOWNLOAD_PROXY_BASE_URL}?fileId=${encodeURIComponent(fileId)}`;
+    logger.info(`Document URL (proxy): ${documentUrl}`);
 
     let exotelResponse;
     try {
-      exotelResponse = await exotelService.sendDocumentMessage(phoneNumber, tempUrl, originalFileName);
+      exotelResponse = await exotelService.sendDocumentMessage(phoneNumber, documentUrl, originalFileName);
       logger.info(`WhatsApp message sent successfully. Message ID: ${exotelResponse.messageId}`);
     } catch (error) {
       logger.error(`Failed to send WhatsApp message: ${error.message}`);
@@ -90,6 +92,7 @@ exports.sendPdfViaWhatsApp = async (req, res) => {
       messageId: exotelResponse.messageId,
       phoneNumber,
       fileName: originalFileName,
+      documentUrl,
       timestamp: new Date().toISOString()
     });
   } catch (error) {

@@ -14,8 +14,12 @@ const urlGenerator = require('./utils/urlGenerator');
 
 const app = express();
 
-// Middleware
+// Multipart parser must run first (before body parsers) so raw body is available.
+// Cloud Functions buffer the request; multer fails with "Unexpected end of form".
+const parseMultipart = require('./middleware/parseMultipart');
+
 app.use(cors({ origin: true }));
+app.use(parseMultipart);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,14 +40,17 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   logger.error(`Error: ${err.message}`);
-  if (err.stack) {
-    logger.error(`Stack: ${err.stack}`);
-  }
-  res.status(500).json({ 
-    success: false, 
-    message: err.message || 'Internal Server Error' 
-  });
+  if (err.stack) logger.error(`Stack: ${err.stack}`);
+  const msg = err.message || 'Internal Server Error';
+  const friendly = msg.includes('Unexpected end of form')
+    ? 'Upload failed: request body was incomplete or invalid. Try again or use a smaller file.'
+    : msg;
+  res.status(500).json({ success: false, message: friendly });
 });
 
 // Export as 2nd gen Cloud Function (avoids "Cannot set CPU" on Gen 1)
+// Updated: Fixed multipart parsing and Exotel payload to match working Postman request
 exports.api = onRequest(app);
+
+// Proxy for WhatsApp document delivery: GET ?fileId=fee-receipts/xxx.pdf → stream PDF (no redirect/token)
+exports.downloadFee = require('./downloadFee').downloadFee;

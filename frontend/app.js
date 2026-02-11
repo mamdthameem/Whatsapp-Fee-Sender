@@ -88,6 +88,25 @@ class FeeSenderApp {
                 body: formData
             });
 
+            // Check if response is OK
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = `Server error (${response.status})`;
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, use the text or default message
+                    if (errorText && errorText.length < 200) {
+                        errorMessage = errorText;
+                    }
+                }
+                this.showError(errorMessage);
+                console.error('API Error:', response.status, errorText);
+                return;
+            }
+
+            // Parse JSON response
             const data = await response.json();
 
             if (data.success) {
@@ -98,8 +117,12 @@ class FeeSenderApp {
                 this.showError(data.message || 'Failed to send receipt');
             }
         } catch (error) {
-            this.showError('Network error. Please try again.');
-            console.error('Error:', error);
+            console.error('Request Error:', error);
+            if (error.message && error.message.includes('JSON')) {
+                this.showError('Invalid response from server. Please check if the API is deployed.');
+            } else {
+                this.showError('Network error. Please check your connection and try again.');
+            }
         } finally {
             this.setLoadingState(false);
         }
