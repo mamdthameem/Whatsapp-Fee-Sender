@@ -6,6 +6,11 @@ const { onRequest } = require('firebase-functions/v2/https');
 const express = require('express');
 const cors = require('cors');
 
+// Log unhandled rejections so 500s show real cause in logs (otherwise Google returns HTML 500)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[unhandledRejection]', reason);
+});
+
 // Import backend modules (copy from backend folder)
 const config = require('./config');
 const logger = require('./utils/logger');
@@ -18,8 +23,24 @@ const app = express();
 // Cloud Functions buffer the request; multer fails with "Unexpected end of form".
 const parseMultipart = require('./middleware/parseMultipart');
 
+// Catch any sync errors in middleware so we return JSON 500 instead of Google's HTML 500
+const safeParseMultipart = (req, res, next) => {
+  try {
+    parseMultipart(req, res, (err) => {
+      if (err) {
+        logger.error(`parseMultipart: ${err.message}`);
+        return res.status(500).json({ success: false, message: 'Invalid upload. Try again or use a smaller PDF.' });
+      }
+      next();
+    });
+  } catch (e) {
+    logger.error(`parseMultipart sync error: ${e.message}`);
+    res.status(500).json({ success: false, message: 'Upload failed. Please try again.' });
+  }
+};
+
 app.use(cors({ origin: true }));
-app.use(parseMultipart);
+app.use(safeParseMultipart);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
