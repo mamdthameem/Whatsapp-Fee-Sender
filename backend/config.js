@@ -14,7 +14,7 @@ module.exports = {
     API_KEY: process.env.EXOTEL_API_KEY,
     API_TOKEN: process.env.EXOTEL_API_TOKEN,
     SID: process.env.EXOTEL_SID,
-    TEMPLATE_NAME: process.env.EXOTEL_TEMPLATE_NAME || 'college_fee_receipt',
+    TEMPLATE_NAME: process.env.EXOTEL_TEMPLATE_NAME || 'college_fee_receipt_2',
     FROM_NUMBER: process.env.EXOTEL_FROM_NUMBER || '919442027368', // Default sender number
     WABA_ID: process.env.EXOTEL_WABA_ID
   },

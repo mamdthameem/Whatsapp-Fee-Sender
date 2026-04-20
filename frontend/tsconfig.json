@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "none",
+    "strict": false,
+    "lib": ["DOM", "ES2017"]
+  },
+  "include": ["app.ts"],
+  "exclude": ["app.js"]
+}

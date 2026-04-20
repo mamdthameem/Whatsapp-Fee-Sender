@@ -43,3 +43,7 @@ ui-debug.log
 functions/node_modules/
 functions/.env
 functions/firebase-service-account.json
+
+# Build artifacts / dev exports
+functions-export-for-merge/
+whatsapp_billing_system/

@@ -22,7 +22,8 @@ interface ApiResponse {
 
 class FeeSenderApp {
     private elements: FormElements;
-    private readonly MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
+    private _dismissTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
         this.elements = this.initializeElements();
@@ -206,19 +207,13 @@ class FeeSenderApp {
             <div class="message-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <div class="message-title">Success!</div>
+            <div class="message-title">Sent!</div>
             <div class="message-text">
-                Fee receipt sent successfully to ${data.phoneNumber || 'the recipient'}
+                Receipt delivered to ${data.phoneNumber || 'the recipient'}
             </div>
-            ${data.messageId ? `
-                <div class="message-details">
-                    <i class="fas fa-hashtag"></i>
-                    Message ID: ${data.messageId}
-                </div>
-            ` : ''}
         `;
         this.elements.messageDiv.className = 'message success';
-        this.scrollToMessage();
+        this.autoDismiss();
     }
 
     private showError(message: string): void {
@@ -226,20 +221,26 @@ class FeeSenderApp {
             <div class="message-icon">
                 <i class="fas fa-exclamation-circle"></i>
             </div>
-            <div class="message-title">Error</div>
+            <div class="message-title">Something went wrong</div>
             <div class="message-text">${message}</div>
         `;
         this.elements.messageDiv.className = 'message error';
-        this.scrollToMessage();
+        this.autoDismiss();
     }
 
-    private scrollToMessage(): void {
-        setTimeout(() => {
-            this.elements.messageDiv.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest' 
-            });
-        }, 100);
+    private autoDismiss(): void {
+        if (this._dismissTimer) clearTimeout(this._dismissTimer);
+        this._dismissTimer = setTimeout(() => {
+            const el = this.elements.messageDiv as HTMLElement;
+            el.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(110%)';
+            setTimeout(() => {
+                el.className = 'message';
+                el.innerHTML = '';
+                el.style.cssText = '';
+            }, 360);
+        }, 5000);
     }
 }
 

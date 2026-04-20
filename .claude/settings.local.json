@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"d:/Project - WA PDF Webpage\" ls-files \"backend/firebase-service-account.json\" \"backend/.env\" \"backend/logs\" \"backend/uploads\")",
+      "Bash(git -C \"d:/Project - WA PDF Webpage\" ls-files --error-unmatch \"whatsapp_billing_system/index.js\")",
+      "Bash(git -C \"d:/Project - WA PDF Webpage\" rm -r --cached functions-export-for-merge/ whatsapp_billing_system/ test-api.js)"
+    ]
+  }
+}

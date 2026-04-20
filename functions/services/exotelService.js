@@ -44,7 +44,7 @@ exports.sendDocumentMessage = async (phoneNumber, documentUrl, fileName) => {
             content: {
               type: 'template',
               template: {
-                name: config.EXOTEL.TEMPLATE_NAME || 'college_fee_receipt',
+                name: config.EXOTEL.TEMPLATE_NAME || 'college_fee_receipt_2',
                 language: { policy: 'deterministic', code: 'en' },
                 components: [
                   {

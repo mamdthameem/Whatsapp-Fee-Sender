@@ -34,7 +34,7 @@ module.exports = {
     API_KEY: getConfig('exotel.api_key', process.env.EXOTEL_API_KEY),
     API_TOKEN: getConfig('exotel.api_token', process.env.EXOTEL_API_TOKEN),
     SID: getConfig('exotel.sid', process.env.EXOTEL_SID),
-    TEMPLATE_NAME: getConfig('exotel.template_name', process.env.EXOTEL_TEMPLATE_NAME || 'college_fee_receipt'),
+    TEMPLATE_NAME: getConfig('exotel.template_name', process.env.EXOTEL_TEMPLATE_NAME || 'college_fee_receipt_2'),
     FROM_NUMBER: getConfig('exotel.from_number', process.env.EXOTEL_FROM_NUMBER || '919442027368'),
     WABA_ID: getConfig('exotel.waba_id', process.env.EXOTEL_WABA_ID),
     STATUS_CALLBACK: getConfig('exotel.status_callback', process.env.EXOTEL_STATUS_CALLBACK) // Optional webhook URL

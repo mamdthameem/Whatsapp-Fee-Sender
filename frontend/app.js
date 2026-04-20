@@ -206,13 +206,13 @@ class FeeSenderApp {
             <div class="message-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <div class="message-title">Success!</div>
+            <div class="message-title">Sent!</div>
             <div class="message-text">
-                Fee receipt sent successfully to ${data.phoneNumber || 'the recipient'}
+                Receipt delivered to ${data.phoneNumber || 'the recipient'}
             </div>
         `;
         this.elements.messageDiv.className = 'message success';
-        this.scrollToMessage();
+        this._autoDismiss();
     }
 
     showError(message) {
@@ -220,20 +220,26 @@ class FeeSenderApp {
             <div class="message-icon">
                 <i class="fas fa-exclamation-circle"></i>
             </div>
-            <div class="message-title">Error</div>
+            <div class="message-title">Something went wrong</div>
             <div class="message-text">${message}</div>
         `;
         this.elements.messageDiv.className = 'message error';
-        this.scrollToMessage();
+        this._autoDismiss();
     }
 
-    scrollToMessage() {
-        setTimeout(() => {
-            this.elements.messageDiv.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest' 
-            });
-        }, 100);
+    _autoDismiss() {
+        clearTimeout(this._dismissTimer);
+        this._dismissTimer = setTimeout(() => {
+            const el = this.elements.messageDiv;
+            el.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(110%)';
+            setTimeout(() => {
+                el.className = 'message';
+                el.innerHTML = '';
+                el.style.cssText = '';
+            }, 360);
+        }, 5000);
     }
 }
 
